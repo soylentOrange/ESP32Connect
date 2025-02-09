@@ -1,8 +1,8 @@
-#include <MycilaESPConnect.h>
+#include <ESP32Connect.h>
 #include <Preferences.h>
 
 AsyncWebServer server(80);
-Mycila::ESPConnect espConnect(server);
+Soylent::ESPConnect espConnect(server);
 
 void setup() {
   Serial.begin(115200);
@@ -29,27 +29,27 @@ void setup() {
   });
 
   // network state listener is required here in async mode
-  espConnect.listen([](__unused Mycila::ESPConnect::State previous, Mycila::ESPConnect::State state) {
+  espConnect.listen([](__unused Soylent::ESPConnect::State previous, Soylent::ESPConnect::State state) {
     JsonDocument doc;
     espConnect.toJson(doc.to<JsonObject>());
     serializeJsonPretty(doc, Serial);
     Serial.println();
 
     switch (state) {
-      case Mycila::ESPConnect::State::NETWORK_CONNECTED:
-      case Mycila::ESPConnect::State::AP_STARTED:
+      case Soylent::ESPConnect::State::NETWORK_CONNECTED:
+      case Soylent::ESPConnect::State::AP_STARTED:
         // serve your home page here
         server.on("/", HTTP_GET, [&](AsyncWebServerRequest* request) {
           return request->send(200, "text/plain", "Hello World!");
-        }).setFilter([](__unused AsyncWebServerRequest* request) { return espConnect.getState() != Mycila::ESPConnect::State::PORTAL_STARTED; });
+        }).setFilter([](__unused AsyncWebServerRequest* request) { return espConnect.getState() != Soylent::ESPConnect::State::PORTAL_STARTED; });
         server.begin();
         break;
 
-      case Mycila::ESPConnect::State::NETWORK_DISCONNECTED:
+      case Soylent::ESPConnect::State::NETWORK_DISCONNECTED:
         server.end();
         break;
 
-      case Mycila::ESPConnect::State::PORTAL_COMPLETE: {
+      case Soylent::ESPConnect::State::PORTAL_COMPLETE: {
         Serial.println("====> Captive Portal has ended, save the configuration...");
         bool apMode = espConnect.hasConfiguredAPMode();
         Preferences preferences;
@@ -76,7 +76,7 @@ void setup() {
   Serial.println("====> Load config from elsewhere...");
   Preferences preferences;
   preferences.begin("app", true);
-  Mycila::ESPConnect::Config config = {
+  Soylent::ESPConnect::Config config = {
     .wifiSSID = (preferences.isKey("ssid") ? preferences.getString("ssid", emptyString) : emptyString).c_str(),
     .wifiPassword = (preferences.isKey("password") ? preferences.getString("password", emptyString) : emptyString).c_str(),
     .apMode = preferences.isKey("ap") ? preferences.getBool("ap", false) : false};

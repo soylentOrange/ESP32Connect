@@ -1,7 +1,7 @@
-#include <MycilaESPConnect.h>
+#include <ESP32Connect.h>
 
 AsyncWebServer server(80);
-Mycila::ESPConnect espConnect(server);
+Soylent::ESPConnect espConnect(server);
 uint32_t lastLog = 0;
 
 void setup() {
@@ -25,7 +25,7 @@ void setup() {
   });
 
   // network state listener
-  espConnect.listen([](__unused Mycila::ESPConnect::State previous, __unused Mycila::ESPConnect::State state) {
+  espConnect.listen([](__unused Soylent::ESPConnect::State previous, __unused Soylent::ESPConnect::State state) {
     JsonDocument doc;
     espConnect.toJson(doc.to<JsonObject>());
     serializeJsonPretty(doc, Serial);
@@ -44,7 +44,7 @@ void setup() {
   // serve your home page here
   server.on("/", HTTP_GET, [&](AsyncWebServerRequest* request) {
     return request->send(200, "text/plain", "Hello World!");
-  }).setFilter([](__unused AsyncWebServerRequest* request) { return espConnect.getState() != Mycila::ESPConnect::State::PORTAL_STARTED; });
+  }).setFilter([](__unused AsyncWebServerRequest* request) { return espConnect.getState() != Soylent::ESPConnect::State::PORTAL_STARTED; });
 
   server.begin();
 }

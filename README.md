@@ -1,22 +1,11 @@
-# MycilaESPConnect
-
-[![Latest Release](https://img.shields.io/github/release/mathieucarbou/MycilaESPConnect.svg)](https://GitHub.com/mathieucarbou/MycilaESPConnect/releases/)
-[![PlatformIO Registry](https://badges.registry.platformio.org/packages/mathieucarbou/library/MycilaESPConnect.svg)](https://registry.platformio.org/libraries/mathieucarbou/MycilaESPConnect)
-
-[![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
-
-[![Build](https://github.com/mathieucarbou/MycilaESPConnect/actions/workflows/ci.yml/badge.svg)](https://github.com/mathieucarbou/MycilaESPConnect/actions/workflows/ci.yml)
-[![GitHub latest commit](https://badgen.net/github/last-commit/mathieucarbou/MycilaESPConnect)](https://GitHub.com/mathieucarbou/MycilaESPConnect/commit/)
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/mathieucarbou/MycilaESPConnect)
+# ESP32Connect
 
 Simple & Easy Network Manager for ESP32 with WiFi, Ethernet and Captive Portal support
 
-[![](https://mathieu.carbou.me/MycilaESPConnect/screenshot.png)](https://mathieu.carbou.me/MycilaESPConnect/screenshot.png)
+<!-- [![](https://mathieu.carbou.me/MycilaESPConnect/screenshot.png)](https://mathieu.carbou.me/MycilaESPConnect/screenshot.png) -->
 
-This library is based on the UI from [https://github.com/ayushsharma82/ESPConnect](https://github.com/ayushsharma82/ESPConnect) (and this part falls under GPL v3).
-I highly recommend looking at all OSS projects (and products) from [@ayushsharma82](https://github.com/ayushsharma82).
-He is making great Arduino libraries.
+This library is based on [MycilaESPConnect](https://github.com/mathieucarbou/MycilaESPConnect), which I highly recommend. 
+This fork is intended as a playground for changing the web frontend (and also remove ethernet).
 
 - [Changes](#changes)
 - [Usage](#usage)
@@ -24,25 +13,8 @@ He is making great Arduino libraries.
   - [Blocking mode](#blocking-mode)
   - [Non-blocking mode](#non-blocking-mode)
   - [Use an external configuration system](#use-an-external-configuration-system)
-  - [ESP8266 Specifics](#esp8266-specifics)
-  - [Ethernet Support](#ethernet-support)
   - [Logo](#logo)
   - [mDNS](#mdns)
-
-## Changes
-
-- **Logo**: user is responsible to provide a logo at this path: `/logo`
-- **AP Mode**: a new choice is added to the captive portal so that the user can remain in AP mode
-- **Network State Machine**: a better state machine is implemented to handle switching between Captive Portal, AP Mode and STA mode
-- **New API**: API has been completely rewritten
-- **Callback**: Listen to Network State changes
-- **Blocking and Non-blocking modes**: ESPConnect can be configured to loop and wait for the user to complete the Captive Portal steps, or the app can continue working in the background and the Captive Portal will be launched as needed.
-- **Flexible Configuration:** ESPConnect can either control the configuration persistence for you or let you do it
-- **mDNS / DNS Support**
-- **Ethernet support**
-- **Ready for Arduino 3 (ESP-IDF 5.1)**
-- **ESP8266 support** (except for Ethernet)
-- **Supports Static IP configuration**
 
 ## Usage
 

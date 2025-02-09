@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou
+ * Copyright (C) 2023-2024 Mathieu Carbou, 2025 Robert Wendlandt
  */
 #pragma once
 
@@ -11,9 +11,9 @@
 
 #include <string>
 
-#define ESPCONNECT_VERSION          "7.1.1"
-#define ESPCONNECT_VERSION_MAJOR    7
-#define ESPCONNECT_VERSION_MINOR    1
+#define ESPCONNECT_VERSION          "0.0.1"
+#define ESPCONNECT_VERSION_MAJOR    0
+#define ESPCONNECT_VERSION_MINOR    0
 #define ESPCONNECT_VERSION_REVISION 1
 
 #ifndef ESPCONNECT_CONNECTION_TIMEOUT
@@ -24,7 +24,7 @@
   #define ESPCONNECT_PORTAL_TIMEOUT 180
 #endif
 
-namespace Mycila {
+namespace Soylent {
   class ESPConnect {
     public:
       enum class State {
@@ -66,15 +66,13 @@ namespace Mycila {
         // wifi ap
         AP,
         // wifi sta
-        STA,
-        // ethernet
-        ETH
+        STA
       };
 
       typedef std::function<void(State previous, State state)> StateCallback;
 
       typedef struct {
-          // Static IP address to use when connecting to WiFi (STA mode) or Ethernet
+          // Static IP address to use when connecting to WiFi (STA mode)
           // If not set, DHCP will be used
           IPAddress ip;
           // Subnet mask: 255.255.255.0
@@ -130,7 +128,7 @@ namespace Mycila {
       const char* getStateName() const;
       const char* getStateName(State state) const;
 
-      // returns the current default mode of the ESP (STA, AP, ETH). ETH has priority over STA if both are connected
+      // returns the current default mode of the ESP (STA, AP).
       Mode getMode() const;
 
       bool isConnected() const { return getIPAddress()[0] != 0; }
@@ -138,7 +136,7 @@ namespace Mycila {
       std::string getMACAddress() const { return getMACAddress(getMode()); }
       std::string getMACAddress(Mode mode) const;
 
-      // Returns the IP address of the current Ethernet, WiFi, or IP address of the AP or captive portal, or empty if not available
+      // Returns the IP address of the current WiFi, or IP address of the AP or captive portal, or empty if not available
       IPAddress getIPAddress() const { return getIPAddress(getMode()); }
       IPAddress getIPAddress(Mode mode) const;
 
@@ -168,10 +166,10 @@ namespace Mycila {
       // whether we need to set the ESP to stay in AP mode or not, loaded from config, begin(), or from captive portal
       bool hasConfiguredAPMode() const { return _config.apMode; }
 
-      // IP configuration used for WiFi or ETH
+      // IP configuration used for WiFi
       const IPConfig& getIPConfig() const { return _ipConfig; }
       // Static IP configuration: by default, DHCP is used
-      // The static IP configuration applies to the WiFi STA connection, except if ETH is used for ETH board, then it applies only to the Ethernet connection.
+      // The static IP configuration applies to the WiFi STA connection.
       void setIPConfig(const IPConfig& ipConfig) { _ipConfig = ipConfig; }
 
       // Maximum duration that the captive portal will be active before closing
@@ -212,20 +210,13 @@ namespace Mycila {
       uint32_t _portalTimeout = ESPCONNECT_PORTAL_TIMEOUT;
       Config _config;
       IPConfig _ipConfig;
-#ifndef ESP8266
       WiFiEventId_t _wifiEventListenerId = 0;
-#endif
       bool _blocking = true;
       bool _autoRestart = true;
       bool _autoSave = false;
       AsyncCallbackWebHandler* _scanHandler = nullptr;
       AsyncCallbackWebHandler* _connectHandler = nullptr;
       AsyncCallbackWebHandler* _homeHandler = nullptr;
-#ifdef ESP8266
-      WiFiEventHandler onStationModeGotIP;
-      WiFiEventHandler onStationModeDHCPTimeout;
-      WiFiEventHandler onStationModeDisconnected;
-#endif
 
     private:
       void _setState(State state);
@@ -237,11 +228,8 @@ namespace Mycila {
       void _onWiFiEvent(WiFiEvent_t event);
       bool _durationPassed(uint32_t intervalSec);
       void _scan();
-#ifdef ESPCONNECT_ETH_SUPPORT
-      void _startEthernet();
-#endif
 
     private:
       static int8_t _wifiSignalQuality(int32_t rssi);
   };
-} // namespace Mycila
+} // namespace Soylent
