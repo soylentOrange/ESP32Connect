@@ -5,9 +5,8 @@ Simple & Easy Network Manager for ESP32 with WiFi, Ethernet and Captive Portal s
 <!-- [![](https://mathieu.carbou.me/MycilaESPConnect/screenshot.png)](https://mathieu.carbou.me/MycilaESPConnect/screenshot.png) -->
 
 This library is based on [MycilaESPConnect](https://github.com/mathieucarbou/MycilaESPConnect), which I highly recommend. 
-This fork is intended as a playground for changing the web frontend (and also remove ethernet).
+This fork is intended as a playground for changing the web frontend (and also remove ethernet and eps8266 support).
 
-- [Changes](#changes)
 - [Usage](#usage)
   - [API](#api)
   - [Blocking mode](#blocking-mode)
@@ -39,9 +38,9 @@ Please have a look at the self-documented API for the other methods and teh exam
 
 ```cpp
   AsyncWebServer server(80);
-  Mycila::ESPConnect espConnect(server);
+  Soylent::ESPConnect espConnect(server);
 
-  espConnect.listen([](__unused Mycila::ESPConnect::State previous, __unused Mycila::ESPConnect::State state) {
+  espConnect.listen([](__unused Soylent::ESPConnect::State previous, __unused Soylent::ESPConnect::State state) {
     // ...
   });
 
@@ -56,9 +55,9 @@ Please have a look at the self-documented API for the other methods and teh exam
 ```cpp
 void setup() {
   AsyncWebServer server(80);
-  Mycila::ESPConnect espConnect(server);
+  Soylent::ESPConnect espConnect(server);
 
-  espConnect.listen([](__unused Mycila::ESPConnect::State previous, __unused Mycila::ESPConnect::State state) {
+  espConnect.listen([](__unused Soylent::ESPConnect::State previous, __unused Soylent::ESPConnect::State state) {
     // ...
   });
 
@@ -76,7 +75,7 @@ void loop() {
 ### Set static IP
 
 ```cpp
-Mycila::ESPConnect::IPConfig ipConfig;
+Soylent::ESPConnect::IPConfig ipConfig;
 
 ipConfig.ip.fromString("192.168.125.99");
 ipConfig.gateway.fromString("192.168.125.1");
@@ -90,11 +89,11 @@ espConnect.setIPConfig(ipConfig);
 
 ```cpp
   AsyncWebServer server(80);
-  Mycila::ESPConnect espConnect(server);
+  Soylent::ESPConnect espConnect(server);
 
-  espConnect.listen([](__unused Mycila::ESPConnect::State previous, __unused Mycila::ESPConnect::State state) {
+  espConnect.listen([](__unused Soylent::ESPConnect::State previous, __unused Soylent::ESPConnect::State state) {
     switch (state) {
-      case Mycila::ESPConnect::State::PORTAL_COMPLETE:
+      case Soylent::ESPConnect::State::PORTAL_COMPLETE:
         bool apMode = espConnect.hasConfiguredAPMode();
         std::string wifiSSID = espConnect.getConfiguredWiFiSSID();
         std::string wifiPassword = espConnect.getConfiguredWiFiPassword();
@@ -115,7 +114,7 @@ espConnect.setIPConfig(ipConfig);
   espConnect.setBlocking(true);
 
   // load config from external system
-  Mycila::ESPConnect::Config config = {
+  Soylent::ESPConnect::Config config = {
     .wifiSSID = ...,
     .wifiPassword = ...,
     .apMode = ...
@@ -124,73 +123,12 @@ espConnect.setIPConfig(ipConfig);
   espConnect.begin("arduino", "Captive Portal SSID", "", config);
 ```
 
-### ESP8266 Specifics
-
-The dependency `vshymanskyy/Preferences` is required when using the auto-load avd auto-save feature.
-
-### Ethernet Support
-
-Set `-D ESPCONNECT_ETH_SUPPORT` to add Ethernet support.
-
-- Ethernet takes precedence over WiFi, but you can have both connected at the same time
-- Ethernet takes precedence over Captive Portal: if it is running and you connect an Ethernet cable, the Captive Portal will be closed
-- Ethernet _does not_ take precedence over AP Mode: if AP mode is configured, then Ethernet won't be started even if a cable is connected
-
-**Hints**:
-
-- If your ethernet card requires to set `ETH_PHY_POWER`, the library will automatically power the pin.
-
-- If you need to reset the pin before powering it up, use `ESPCONNECT_ETH_RESET_ON_START`
-
 Known **compatibilities**:
 
 | **Board**                                                                                                                        | **Compile** | **Tested** |
 | :------------------------------------------------------------------------------------------------------------------------------- | :---------: | :--------: |
-| [OLIMEX ESP32-PoE](https://docs.platformio.org/en/stable/boards/espressif32/esp32-poe.html) (esp32-poe)                          |     ✅      |     ✅     |
-| [OLIMEX ESP32-GATEWAY](https://docs.platformio.org/en/stable/boards/espressif32/esp32-gateway.html)                              |     ✅      |     ✅     |
-| [Wireless-Tag WT32-ETH01 Ethernet Module](https://docs.platformio.org/en/stable/boards/espressif32/wt32-eth01.html) (wt32-eth01) |     ✅      |     ✅     |
-| [T-ETH-Lite ESP32 S3](https://github.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/) (esp32s3box)                                       |     ✅      |     ✅     |
-| [USR-ES1 W5500](https://fr.aliexpress.com/item/1005001636214844.html)                                                            |     ✅      |     ✅     |
-
-Example of flags for **wt32-eth01**:
-
-```cpp
-  -D ESPCONNECT_ETH_SUPPORT
-  -D ETH_PHY_ADDR=1
-  -D ETH_PHY_POWER=16
-```
-
-Example of flags for **T-ETH-Lite ESP32 S3**:
-
-```cpp
-  -D ESPCONNECT_ETH_SUPPORT
-  -D ETH_PHY_ADDR=1
-  -D ETH_PHY_CS=9
-  -D ETH_PHY_IRQ=13
-  -D ETH_PHY_RST=14
-  -D ETH_PHY_SPI_MISO=11
-  -D ETH_PHY_SPI_MOSI=12
-  -D ETH_PHY_SPI_SCK=10
-  ; can only be activated with ESP-IDF >= 5
-  ; -D ETH_PHY_TYPE=ETH_PHY_W5500
-```
-
-Example of flags for **USR-ES1 W5500 with esp32dev** (tested by [@MicSG-dev](https://github.com/mathieucarbou/ESPAsyncWebServer/discussions/36#discussioncomment-9826045)):
-
-```cpp
-  -D ESPCONNECT_ETH_SUPPORT
-  -D ETH_PHY_ADDR=1
-  -D ETH_PHY_CS=5
-  -D ETH_PHY_IRQ=4
-  -D ETH_PHY_RST=14
-  -D ETH_PHY_SPI_MISO=19
-  -D ETH_PHY_SPI_MOSI=23
-  -D ETH_PHY_SPI_SCK=18
-  ; can only be activated with ESP-IDF >= 5
-  ; -D ETH_PHY_TYPE=ETH_PHY_W5500
-```
-
-Note: this project is making use of the `ETHClass` library from [Lewis He](https://github.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/tree/master/lib/ETHClass)
+| [Waveshare ESP32-S3-Tiny](https://www.waveshare.com/wiki/ESP32-S3-Tiny) (esp32s3)                          |     ✅      |     ✅     |
+| [WEMOS LOLIN S2 Mini](https://www.wemos.cc/en/latest/s2/s2_mini.html) (esp32s2)                              |     ✅      |     ✅     |
 
 ### Logo
 
