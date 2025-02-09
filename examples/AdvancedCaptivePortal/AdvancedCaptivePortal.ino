@@ -2,7 +2,7 @@
 #include <Preferences.h>
 
 AsyncWebServer server(80);
-Soylent::ESPConnect espConnect(server);
+Soylent::ESP32Connect espConnect(server);
 
 void setup() {
   Serial.begin(115200);
@@ -29,27 +29,27 @@ void setup() {
   });
 
   // network state listener is required here in async mode
-  espConnect.listen([](__unused Soylent::ESPConnect::State previous, Soylent::ESPConnect::State state) {
+  espConnect.listen([](__unused Soylent::ESP32Connect::State previous, Soylent::ESP32Connect::State state) {
     JsonDocument doc;
     espConnect.toJson(doc.to<JsonObject>());
     serializeJsonPretty(doc, Serial);
     Serial.println();
 
     switch (state) {
-      case Soylent::ESPConnect::State::NETWORK_CONNECTED:
-      case Soylent::ESPConnect::State::AP_STARTED:
+      case Soylent::ESP32Connect::State::NETWORK_CONNECTED:
+      case Soylent::ESP32Connect::State::AP_STARTED:
         // serve your home page here
         server.on("/", HTTP_GET, [&](AsyncWebServerRequest* request) {
           return request->send(200, "text/plain", "Hello World!");
-        }).setFilter([](__unused AsyncWebServerRequest* request) { return espConnect.getState() != Soylent::ESPConnect::State::PORTAL_STARTED; });
+        }).setFilter([](__unused AsyncWebServerRequest* request) { return espConnect.getState() != Soylent::ESP32Connect::State::PORTAL_STARTED; });
         server.begin();
         break;
 
-      case Soylent::ESPConnect::State::NETWORK_DISCONNECTED:
+      case Soylent::ESP32Connect::State::NETWORK_DISCONNECTED:
         server.end();
         break;
 
-      case Soylent::ESPConnect::State::PORTAL_COMPLETE: {
+      case Soylent::ESP32Connect::State::PORTAL_COMPLETE: {
         Serial.println("====> Captive Portal has ended, save the configuration...");
         bool apMode = espConnect.hasConfiguredAPMode();
         Preferences preferences;
@@ -76,7 +76,7 @@ void setup() {
   Serial.println("====> Load config from elsewhere...");
   Preferences preferences;
   preferences.begin("app", true);
-  Soylent::ESPConnect::Config config = {
+  Soylent::ESP32Connect::Config config = {
     .wifiSSID = (preferences.isKey("ssid") ? preferences.getString("ssid", emptyString) : emptyString).c_str(),
     .wifiPassword = (preferences.isKey("password") ? preferences.getString("password", emptyString) : emptyString).c_str(),
     .apMode = preferences.isKey("ap") ? preferences.getBool("ap", false) : false};
