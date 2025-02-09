@@ -20,7 +20,7 @@
 #ifdef ESPCONNECT_DEBUG
   #ifdef MYCILA_LOGGER_SUPPORT
     #include <MycilaLogger.h>
-    extern Mycila::Logger logger;
+extern Mycila::Logger logger;
     #define LOGD(tag, format, ...) logger.debug(tag, format, ##__VA_ARGS__)
     #define LOGI(tag, format, ...) logger.info(tag, format, ##__VA_ARGS__)
     #define LOGW(tag, format, ...) logger.warn(tag, format, ##__VA_ARGS__)
@@ -32,10 +32,10 @@
     #define LOGE(tag, format, ...) ESP_LOGE(tag, format, ##__VA_ARGS__)
   #endif
 #else
-    #define LOGD(tag, format, ...)
-    #define LOGI(tag, format, ...)
-    #define LOGW(tag, format, ...)
-    #define LOGE(tag, format, ...)
+  #define LOGD(tag, format, ...)
+  #define LOGI(tag, format, ...)
+  #define LOGW(tag, format, ...)
+  #define LOGE(tag, format, ...)
 #endif
 
 #define TAG "ESPCONNECT"
@@ -203,7 +203,7 @@ void Soylent::ESPConnect::begin(const char* hostname, const char* apSSID, const 
   _hostname = hostname;
   _apSSID = apSSID;
   _apPassword = apPassword;
-  _config = config;   // copy values
+  _config = config; // copy values
 
   // TODO(soylentOrange): Change std::bind to lambda
   _wifiEventListenerId = WiFi.onEvent(std::bind(&ESPConnect::_onWiFiEvent, this, std::placeholders::_1));
