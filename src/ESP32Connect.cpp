@@ -24,7 +24,7 @@
     #define LOGD(tag, format, ...) logger.debug(tag, format, ##__VA_ARGS__)
     #define LOGI(tag, format, ...) logger.info(tag, format, ##__VA_ARGS__)
     #define LOGW(tag, format, ...) logger.warn(tag, format, ##__VA_ARGS__)
-    #define LOGE(tag, format, ...) logger.error(tag, format, ##__VA_ARGS__)  
+    #define LOGE(tag, format, ...) logger.error(tag, format, ##__VA_ARGS__)
   #else
     #define LOGD(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
     #define LOGI(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
@@ -203,9 +203,9 @@ void Soylent::ESPConnect::begin(const char* hostname, const char* apSSID, const 
   _hostname = hostname;
   _apSSID = apSSID;
   _apPassword = apPassword;
-  _config = config; // copy values
+  _config = config;   // copy values
 
-  // TODO: Change std::bind to lambda
+  // TODO(soylentOrange): Change std::bind to lambda
   _wifiEventListenerId = WiFi.onEvent(std::bind(&ESPConnect::_onWiFiEvent, this, std::placeholders::_1));
 
   _state = Soylent::ESPConnect::State::NETWORK_ENABLED;
@@ -291,8 +291,9 @@ void Soylent::ESPConnect::loop() {
     if (_autoRestart) {
       LOGW(TAG, "Auto Restart of ESP...");
       ESP.restart();
-    } else
+    } else {
       _setState(Soylent::ESPConnect::State::NETWORK_ENABLED);
+    }
   }
 }
 
@@ -381,7 +382,7 @@ void Soylent::ESPConnect::_startAP() {
   _setState(_config.apMode ? Soylent::ESPConnect::State::AP_STARTING : Soylent::ESPConnect::State::PORTAL_STARTING);
 
   LOGI(TAG, "Starting Access Point...");
-  
+
   WiFi.softAPsetHostname(_hostname.c_str());
   WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
   WiFi.setSortMethod(WIFI_CONNECT_AP_BY_SIGNAL);
@@ -396,8 +397,9 @@ void Soylent::ESPConnect::_startAP() {
   if (_apPassword.empty() || _apPassword.length() < 8) {
     // Disabling invalid Access Point password which must be at least 8 characters long when set
     WiFi.softAP(_apSSID.c_str(), "");
-  } else
+  } else {
     WiFi.softAP(_apSSID.c_str(), _apPassword.c_str());
+  }
 
   if (_dnsServer == nullptr) {
     _dnsServer = new DNSServer();
@@ -552,7 +554,6 @@ void Soylent::ESPConnect::_onWiFiEvent(WiFiEvent_t event) {
     return;
 
   switch (event) {
-
     case ARDUINO_EVENT_WIFI_STA_GOT_IP:
       if (_state == Soylent::ESPConnect::State::NETWORK_CONNECTING || _state == Soylent::ESPConnect::State::NETWORK_RECONNECTING) {
         LOGD(TAG, "[%s] WiFiEvent: ARDUINO_EVENT_WIFI_STA_GOT_IP", getStateName());

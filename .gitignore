@@ -5,3 +5,5 @@
 /logs
 /portal/node_modules/
 /portal/public/build/
+logs/
+build/
