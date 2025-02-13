@@ -1,6 +1,6 @@
 {
   "name": "ESP32Connect",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Simple & Easy Network Manager for ESP32 with WiFi, Ethernet and Captive Portal support",
   "keywords": "http,async,websocket,webserver",
   "homepage": "https://github.com/soylentOrange/ESP32Connect",
@@ -9,10 +9,6 @@
     "url": "https://github.com/soylentOrange/ESP32Connect.git"
   },
   "authors": [
-    {
-      "name": "Mathieu Carbou",
-      "email": "mathieu.carbou@gmail.com"
-    }, 
     {
       "name": "Robert Wendlandt",
       "email": "orange.soylent@gmail.com",

@@ -11,10 +11,10 @@
 
 #include <string>
 
-#define ESPCONNECT_VERSION          "0.0.1"
+#define ESPCONNECT_VERSION          "0.1.0"
 #define ESPCONNECT_VERSION_MAJOR    0
-#define ESPCONNECT_VERSION_MINOR    0
-#define ESPCONNECT_VERSION_REVISION 1
+#define ESPCONNECT_VERSION_MINOR    1
+#define ESPCONNECT_VERSION_REVISION 0
 
 #ifndef ESPCONNECT_CONNECTION_TIMEOUT
   #define ESPCONNECT_CONNECTION_TIMEOUT 20
@@ -25,7 +25,7 @@
 #endif
 
 namespace Soylent {
-  class ESP32Connect {
+  class ESPConnect {
     public:
       enum class State {
         // end() => NETWORK_DISABLED
@@ -91,10 +91,10 @@ namespace Soylent {
       } Config;
 
     public:
-      explicit ESP32Connect(AsyncWebServer& httpd) : _httpd(&httpd) {}
-      ~ESP32Connect() { end(); }
+      explicit ESPConnect(AsyncWebServer& httpd) : _httpd(&httpd) {}
+      ~ESPConnect() { end(); }
 
-      // Start ESP32Connect:
+      // Start ESPConnect:
       //
       // 1. Load the configuration
       // 2. If apMode is true, starts in AP Mode
@@ -104,7 +104,7 @@ namespace Soylent {
       // Using this method will activate auto-load and auto-save of the configuration
       void begin(const char* hostname, const char* apSSID, const char* apPassword = ""); // NOLINT
 
-      // Start ESP32Connect:
+      // Start ESPConnect:
       //
       // 1. If apMode is true, starts in AP Mode
       // 2. If apMode is false, try to start in STA mode
@@ -182,14 +182,14 @@ namespace Soylent {
       // Maximum duration that the ESP will try to connect to the WiFi before giving up and start the captive portal
       void setConnectTimeout(uint32_t timeout) { _connectTimeout = timeout; }
 
-      // Whether ESP32Connect will block in the begin() method until the network is ready or not (old behaviour)
+      // Whether ESPConnect will block in the begin() method until the network is ready or not (old behaviour)
       bool isBlocking() const { return _blocking; }
-      // Whether ESP32Connect will block in the begin() method until the network is ready or not (old behaviour)
+      // Whether ESPConnect will block in the begin() method until the network is ready or not (old behaviour)
       void setBlocking(bool blocking) { _blocking = blocking; }
 
-      // Whether ESP32Connect will restart the ESP if the captive portal times out or once it has completed (old behaviour)
+      // Whether ESPConnect will restart the ESP if the captive portal times out or once it has completed (old behaviour)
       bool isAutoRestart() const { return _autoRestart; }
-      // Whether ESP32Connect will restart the ESP if the captive portal times out or once it has completed (old behaviour)
+      // Whether ESPConnect will restart the ESP if the captive portal times out or once it has completed (old behaviour)
       void setAutoRestart(bool autoRestart) { _autoRestart = autoRestart; }
 
       // when using auto-load and save of configuration, this method can clear saved states.
