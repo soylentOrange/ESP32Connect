@@ -173,8 +173,8 @@ int8_t Soylent::ESPConnect::_wifiSignalQuality(int32_t rssi) {
   return s > 100 ? 100 : (s < 0 ? 0 : s);
 }
 
-void Soylent::ESPConnect::begin(const char* hostname, 
-                                const char* apSSID, 
+void Soylent::ESPConnect::begin(const char* hostname,
+                                const char* apSSID,
                                 const char* apPassword) {
   if (_state != Soylent::ESPConnect::State::NETWORK_DISABLED)
     return;
