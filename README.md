@@ -21,12 +21,12 @@ This fork is intended as a playground for changing the web frontend (and also re
 
 - `espConnect.setAutoRestart(bool)`: will automatically restart the ESP after the captive portal times out, or after the captive portal has been answered by te user
 - `espConnect.setBlocking(bool)`: will block the execution of the program in the begin code to handle the connect. If false, the setup code will continue in the background and the network setup will be done in the background from the main loop.
-- `espConnect.listen()`: register a callback for all ESP32Connect events
+- `espConnect.listen()`: register a callback for all ESPConnect events
 
 2 flavors of `begin()` methods:
 
 1. `espConnect.begin("hostname", "ssid", "password")` / `espConnect.begin("hostname", "ssid")`
-2. `espConnect.begin("hostname", "ssid", "password", Soylent::ESP32Connect::Config)` where config is `{.wifiSSID = ..., .wifiPassword = ..., .apMode = ...}`
+2. `espConnect.begin("hostname", "ssid", "password", Soylent::ESPConnect::Config)` where config is `{.wifiSSID = ..., .wifiPassword = ..., .apMode = ...}`
 
 The first flavors will automatically handle the persistance of user choices and reload them at startup.
 
@@ -38,16 +38,16 @@ Please have a look at the self-documented API for the other methods and teh exam
 
 ```cpp
   AsyncWebServer server(80);
-  Soylent::ESP32Connect espConnect(server);
+  Soylent::ESPConnect espConnect(server);
 
-  espConnect.listen([](__unused Soylent::ESP32Connect::State previous, __unused Soylent::ESP32Connect::State state) {
+  espConnect.listen([](__unused Soylent::ESPConnect::State previous, __unused Soylent::ESPConnect::State state) {
     // ...
   });
 
   espConnect.setAutoRestart(true);
   espConnect.setBlocking(true);
   espConnect.begin("arduino", "Captive Portal SSID");
-  Serial.println("ESP32Connect completed!");
+  Serial.println("ESPConnect completed!");
 ```
 
 ### Non-blocking mode
@@ -55,16 +55,16 @@ Please have a look at the self-documented API for the other methods and teh exam
 ```cpp
 void setup() {
   AsyncWebServer server(80);
-  Soylent::ESP32Connect espConnect(server);
+  Soylent::ESPConnect espConnect(server);
 
-  espConnect.listen([](__unused Soylent::ESP32Connect::State previous, __unused Soylent::ESP32Connect::State state) {
+  espConnect.listen([](__unused Soylent::ESPConnect::State previous, __unused Soylent::ESPConnect::State state) {
     // ...
   });
 
   espConnect.setAutoRestart(true);
   espConnect.setBlocking(false);
   espConnect.begin("arduino", "Captive Portal SSID");
-  Serial.println("ESP32Connect started!");
+  Serial.println("ESPConnect started!");
 }
 
 void loop() {
@@ -75,7 +75,7 @@ void loop() {
 ### Set static IP
 
 ```cpp
-Soylent::ESP32Connect::IPConfig ipConfig;
+Soylent::ESPConnect::IPConfig ipConfig;
 
 ipConfig.ip.fromString("192.168.125.99");
 ipConfig.gateway.fromString("192.168.125.1");
@@ -89,11 +89,11 @@ espConnect.setIPConfig(ipConfig);
 
 ```cpp
   AsyncWebServer server(80);
-  Soylent::ESP32Connect espConnect(server);
+  Soylent::ESPConnect espConnect(server);
 
-  espConnect.listen([](__unused Soylent::ESP32Connect::State previous, __unused Soylent::ESP32Connect::State state) {
+  espConnect.listen([](__unused Soylent::ESPConnect::State previous, __unused Soylent::ESPConnect::State state) {
     switch (state) {
-      case Soylent::ESP32Connect::State::PORTAL_COMPLETE:
+      case Soylent::ESPConnect::State::PORTAL_COMPLETE:
         bool apMode = espConnect.hasConfiguredAPMode();
         std::string wifiSSID = espConnect.getConfiguredWiFiSSID();
         std::string wifiPassword = espConnect.getConfiguredWiFiPassword();
@@ -114,7 +114,7 @@ espConnect.setIPConfig(ipConfig);
   espConnect.setBlocking(true);
 
   // load config from external system
-  Soylent::ESP32Connect::Config config = {
+  Soylent::ESPConnect::Config config = {
     .wifiSSID = ...,
     .wifiPassword = ...,
     .apMode = ...
@@ -136,14 +136,17 @@ You can customize the logo by providing a web handler for `/logo`:
 
 ```c++
   server.on("/logo", HTTP_GET, [](AsyncWebServerRequest* request) {
-    AsyncWebServerResponse* response = request->beginResponse(200, "image/png", logo_png_gz_start, logo_png_gz_end - logo_png_gz_start);
+    auto* response = request->beginResponse(200, 
+                                            "image/png", 
+                                            logo_png_gz_start, 
+                                            logo_png_gz_end - logo_png_gz_start);
     response->addHeader("Content-Encoding", "gzip");
     response->addHeader("Cache-Control", "public, max-age=900");
     request->send(response);
   });
 ```
 
-If not provided, the logo won't appear in the Captive Portal.
+If not provided, only a text "Captive Portal" will be shown.
 
 ### mDNS
 
